@@ -1,5 +1,6 @@
 use mini_redis::{clients::Client, server};
 use std::net::SocketAddr;
+use test_strategy::proptest;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 
@@ -23,6 +24,16 @@ async fn ping_pong_with_message() {
 
     let pong = client.ping(Some("你好世界".into())).await.unwrap();
     assert_eq!("你好世界".as_bytes(), &pong[..]);
+}
+
+#[proptest(async = "tokio")]
+async fn ping_pong_with_random_message(#[any()] str: String) {
+    let sent_str = str.clone();
+    let (addr, _) = start_server().await;
+    let mut client = Client::connect(addr).await.unwrap();
+
+    let pong = client.ping(Some(sent_str.into())).await.unwrap();
+    assert_eq!(str.as_bytes(), &pong[..]);
 }
 
 /// A basic "hello world" style test. A server instance is started in a
