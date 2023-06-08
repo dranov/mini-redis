@@ -26,6 +26,7 @@ async fn ping_pong_with_message() {
     assert_eq!("你好世界".as_bytes(), &pong[..]);
 }
 
+/// A ping pong test with a random message.
 #[proptest(async = "tokio")]
 async fn ping_pong_with_random_message(#[any()] str: String) {
     let sent_str = str.clone();
@@ -35,6 +36,28 @@ async fn ping_pong_with_random_message(#[any()] str: String) {
     let pong = client.ping(Some(sent_str.into())).await.unwrap();
     assert_eq!(str.as_bytes(), &pong[..]);
 }
+
+// Experimenting with Shuttle concurrency testing
+#[test]
+fn shuttle_test() {
+    // See https://github.com/awslabs/shuttle/blob/main/benches/counter.rs
+    // and https://github.com/awslabs/shuttle/blob/main/tests/demo/async_match_deadlock.rs
+    let (max_depth, num_iterations) = (3, 100);
+    let scheduler = shuttle::scheduler::PctScheduler::new_from_seed(0x12345678, max_depth, num_iterations);
+    let runner = shuttle::Runner::new(scheduler, Default::default());
+
+    // fails with "there is no reactor running, must be called from the context of a Tokio 1.x runtime"
+    runner.run(|| {
+        shuttle::future::block_on(async move {
+            let (addr, _) = start_server().await;
+            let mut client = Client::connect(addr).await.unwrap();
+        
+            let pong = client.ping(None).await.unwrap();
+            assert_eq!(b"PONG", &pong[..]);
+        })
+    });
+}
+
 
 /// A basic "hello world" style test. A server instance is started in a
 /// background task. A client instance is then established and set and get
