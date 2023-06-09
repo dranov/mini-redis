@@ -38,6 +38,7 @@ async fn ping_pong_with_random_message(#[any()] str: String) {
 }
 
 // Experimenting with Shuttle concurrency testing
+#[cfg(feature = "shuttle")]
 #[test]
 fn shuttle_test() {
     // See https://github.com/awslabs/shuttle/blob/main/benches/counter.rs
@@ -57,7 +58,6 @@ fn shuttle_test() {
         })
     });
 }
-
 
 /// A basic "hello world" style test. A server instance is started in a
 /// background task. A client instance is then established and set and get
