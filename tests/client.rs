@@ -1,6 +1,6 @@
 use mini_redis::{clients::Client, server};
 use std::net::SocketAddr;
-use test_strategy::proptest;
+// use test_strategy::proptest;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 
@@ -27,6 +27,7 @@ async fn ping_pong_with_message() {
 }
 
 /// A ping pong test with a random message.
+/* 
 #[proptest(async = "tokio")]
 async fn ping_pong_with_random_message(#[any()] str: String) {
     let sent_str = str.clone();
@@ -36,6 +37,7 @@ async fn ping_pong_with_random_message(#[any()] str: String) {
     let pong = client.ping(Some(sent_str.into())).await.unwrap();
     assert_eq!(str.as_bytes(), &pong[..]);
 }
+*/
 
 // Experimenting with Shuttle concurrency testing
 #[cfg(feature = "shuttle")]

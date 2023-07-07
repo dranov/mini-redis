@@ -27,6 +27,7 @@ bytes = "1"
 clap = { version = "4.2.7", features = ["derive"] }
 # tokio = { version = "1", features = ["full"] }
 # tokio-stream = "0.1"
+madsim = "0.2"
 tokio = { version = "0.2", package = "madsim-tokio", features = ["full"] }
 tokio-stream = { git = "https://github.com/madsim-rs/tokio.git", rev = "ab251ad" }
 tracing = "0.1.34"
